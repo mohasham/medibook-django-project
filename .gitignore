@@ -1,0 +1,14 @@
+# Virtual environment: anyone can rebuild it from requirements.txt
+venv/
+
+# Local database: contains your test data and the admin password hash
+db.sqlite3
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Secrets and editor files
+.env
+.vscode/
+.idea/
