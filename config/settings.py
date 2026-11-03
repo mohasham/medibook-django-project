@@ -33,7 +33,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',    # serves CSS/JS/images
 
     # Our apps
-    'accounts',                      # custom User model with roles
+    'accounts',      
+    'doctors',                # custom User model with roles
 ]
 
 # Middleware = code that runs on every request/response, in this order.

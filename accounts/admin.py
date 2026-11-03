@@ -14,9 +14,16 @@ class CustomUserAdmin(UserAdmin):
     # containing our two extra fields.
     fieldsets = UserAdmin.fieldsets + (("Role", {"fields": ("role", "phone")}),)
 
-    # add_fieldsets controls the layout of the CREATE user page (a separate form),
-    # so the new fields must be added here too, or they'd be missing on creation.
-    add_fieldsets = UserAdmin.add_fieldsets + (("Role", {"fields": ("role", "phone")}),)
+    # add_fieldsets controls the layout of the CREATE user page (a separate form).
+    # Django's default add page only asks for username and password, so names
+    # typed there had nowhere to go. We append two sections:
+    #   - "Personal info": first name, last name, email, so a doctor's display
+    #     name ("Dr. Ahmad Khalil") is correct from the very first save.
+    #   - "Role": role and phone, so the account is a doctor/patient immediately.
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ("Personal info", {"fields": ("first_name", "last_name", "email")}),
+        ("Role", {"fields": ("role", "phone")}),
+    )
 
     # Columns shown in the users list table.
     list_display = ("username", "email", "role", "is_staff")
