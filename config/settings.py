@@ -100,7 +100,7 @@ LANGUAGE_CODE = 'en-us'
 
 # Time zone Django uses for display and for converting dates.
 # We'll revisit this when we build appointment slots.
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Beirut'
 
 USE_I18N = True
 
