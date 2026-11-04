@@ -33,7 +33,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',    # serves CSS/JS/images
 
     # Our apps
-    'accounts',                      # custom User model with roles
+    'accounts',      
+    'doctors',                # custom User model with roles
 ]
 
 # Middleware = code that runs on every request/response, in this order.
@@ -99,7 +100,7 @@ LANGUAGE_CODE = 'en-us'
 
 # Time zone Django uses for display and for converting dates.
 # We'll revisit this when we build appointment slots.
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Beirut'
 
 USE_I18N = True
 
