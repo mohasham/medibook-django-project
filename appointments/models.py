@@ -1,10 +1,10 @@
-from django.db import models
-
-# Create your models here.
 from django.conf import settings
 from django.db import models
 
 from doctors.models import Doctor
+
+# Patients cannot cancel or reschedule closer than this to the start time.
+CHANGE_DEADLINE_HOURS = 2
 
 
 class Appointment(models.Model):
