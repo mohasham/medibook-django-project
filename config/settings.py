@@ -134,3 +134,8 @@ MAILERS = {
 # built-in one. Format is "app_label.ModelName".
 # This must be set BEFORE the first migrate.
 AUTH_USER_MODEL = "accounts.User"
+
+# Where Django sends users after login/logout and when a page needs a login.
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "accounts:login"
