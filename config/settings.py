@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     # Our apps
     'accounts',      
     'doctors',                # custom User model with roles
+    'appointments',
 ]
 
 # Middleware = code that runs on every request/response, in this order.
