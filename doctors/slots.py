@@ -28,3 +28,24 @@ def generate_slots(doctor, day):
             current += step
 
     return slots
+
+def available_slots(doctor, day):
+    """Like generate_slots, but without times that already have an active
+    (non-cancelled) appointment. This is what patients should see."""
+    # Imported here to avoid a circular import between the two apps.
+    from appointments.models import Appointment
+
+    slots = generate_slots(doctor, day)
+    if not slots:
+        return []
+
+    booked = set(
+        Appointment.objects.filter(
+            doctor=doctor,
+            start_time__gte=min(slots),
+            start_time__lte=max(slots),
+        )
+        .exclude(status=Appointment.Status.CANCELLED)
+        .values_list("start_time", flat=True)
+    )
+    return [s for s in slots if s not in booked]
