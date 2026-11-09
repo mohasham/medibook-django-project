@@ -1,0 +1,24 @@
+{# Renders any form field by field: label, input, hint, red errors. #}
+{# Used by both login.html and register.html through {% include %}. #}
+
+{# Errors that belong to the whole form, e.g. "wrong username or password". #}
+{% if form.non_field_errors %}
+  <div class="alert alert-danger">
+    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+  </div>
+{% endif %}
+
+{% for field in form %}
+  <div class="mb-3">
+    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+    {{ field }}
+    {# Short hint under the field, only if there is one. #}
+    {% if field.help_text %}
+      <div class="form-text">{{ field.help_text }}</div>
+    {% endif %}
+    {# Real validation errors, shown only after submitting. #}
+    {% for error in field.errors %}
+      <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+  </div>
+{% endfor %}
