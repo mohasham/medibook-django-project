@@ -1,6 +1,3 @@
-from django.test import TestCase
-
-# Create your tests here.
 from datetime import date, datetime, time, timedelta
 
 from django.db import IntegrityError, transaction
@@ -12,7 +9,12 @@ from doctors.models import Availability, Doctor
 from doctors.slots import available_slots
 
 from .models import Appointment
-from .services import BookingError, book_appointment
+from .services import (
+    BookingError,
+    book_appointment,
+    cancel_appointment,
+    reschedule_appointment,
+)
 
 
 def next_monday():
@@ -71,3 +73,55 @@ class BookingTests(TestCase):
         self.assertIn(self.slot, available_slots(self.doctor, day))
         book_appointment(self.doctor.id, self.p1, self.slot)
         self.assertNotIn(self.slot, available_slots(self.doctor, day))
+
+
+class CancelRescheduleTests(TestCase):
+    def setUp(self):
+        doctor_user = User.objects.create_user("doc", password="x", role="doctor")
+        self.doctor = Doctor.objects.create(user=doctor_user)
+        Availability.objects.create(
+            doctor=self.doctor, weekday=0,
+            start_time=time(9, 0), end_time=time(12, 0), slot_minutes=30,
+        )
+        self.p1 = User.objects.create_user("p1", password="x")
+        self.p2 = User.objects.create_user("p2", password="x")
+        day = next_monday()
+        self.slot = timezone.make_aware(datetime.combine(day, time(9, 0)))
+        self.slot2 = timezone.make_aware(datetime.combine(day, time(10, 0)))
+        self.appt = book_appointment(self.doctor.id, self.p1, self.slot)
+
+    def test_cancel_works(self):
+        cancel_appointment(self.appt.id, self.p1)
+        self.appt.refresh_from_db()
+        self.assertEqual(self.appt.status, Appointment.Status.CANCELLED)
+
+    def test_cannot_cancel_someone_elses(self):
+        with self.assertRaises(BookingError):
+            cancel_appointment(self.appt.id, self.p2)
+
+    def test_cannot_cancel_within_deadline(self):
+        # Pretend the appointment starts in 1 hour.
+        Appointment.objects.filter(pk=self.appt.pk).update(
+            start_time=timezone.now() + timedelta(hours=1)
+        )
+        with self.assertRaises(BookingError):
+            cancel_appointment(self.appt.id, self.p1)
+
+    def test_cannot_cancel_twice(self):
+        cancel_appointment(self.appt.id, self.p1)
+        with self.assertRaises(BookingError):
+            cancel_appointment(self.appt.id, self.p1)
+
+    def test_reschedule_works(self):
+        new = reschedule_appointment(self.appt.id, self.p1, self.slot2)
+        self.appt.refresh_from_db()
+        self.assertEqual(self.appt.status, Appointment.Status.CANCELLED)
+        self.assertEqual(new.start_time, self.slot2)
+        self.assertEqual(new.status, Appointment.Status.CONFIRMED)
+
+    def test_reschedule_to_taken_slot_changes_nothing(self):
+        book_appointment(self.doctor.id, self.p2, self.slot2)
+        with self.assertRaises(BookingError):
+            reschedule_appointment(self.appt.id, self.p1, self.slot2)
+        self.appt.refresh_from_db()
+        self.assertEqual(self.appt.status, Appointment.Status.CONFIRMED)
