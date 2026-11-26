@@ -15,9 +15,21 @@
       <a class="navbar-brand" href="{% url 'home' %}">MediBook</a>
       <div class="navbar-nav ms-auto align-items-center">
         {% if user.is_authenticated %}
-          <a class="nav-link" href="{% url 'doctors:list' %}">Doctors</a>
-          {# TODO (Part 3): add the "My appointments" link here once the #}
-          {# appointments:mine route exists. #}
+
+          {# Links depend on who is logged in. #}
+          {% if user.is_staff %}
+            {# Admins manage data in the Django admin. #}
+            {# URL name pattern: admin:<app>_<model>_changelist #}
+            <a class="nav-link" href="{% url 'admin:doctors_doctor_changelist' %}">Manage doctors</a>
+            <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
+          {% elif user.is_patient %}
+            {# Patients browse doctors and book. #}
+            <a class="nav-link" href="{% url 'doctors:list' %}">Doctors</a>
+            {# TODO (Part 3): add the "My appointments" link here once the #}
+            {# appointments:mine route exists. #}
+          {% endif %}
+          {# Doctors get "My schedule" here in step 7c. #}
+
           <span class="navbar-text me-3">{{ user.get_full_name|default:user.username }}</span>
           {# Logout must be a POST in Django 5+, so it is a small form. #}
           <form method="post" action="{% url 'accounts:logout' %}" class="m-0">

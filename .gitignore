@@ -12,3 +12,6 @@ __pycache__/
 .env
 .vscode/
 .idea/
+
+# Uploaded files (doctor photos)
+media/
