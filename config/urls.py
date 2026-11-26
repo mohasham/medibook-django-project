@@ -8,4 +8,5 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("", account_views.home, name="home"),
     path("doctors/", include("doctors.urls")),
+    path("appointments/", include("appointments.urls")),
 ]
