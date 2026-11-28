@@ -23,10 +23,9 @@
             <a class="nav-link" href="{% url 'admin:doctors_doctor_changelist' %}">Manage doctors</a>
             <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
           {% elif user.is_patient %}
-            {# Patients browse doctors and book. #}
+            {# Patients browse doctors, book, and manage their bookings. #}
             <a class="nav-link" href="{% url 'doctors:list' %}">Doctors</a>
-            {# TODO (Part 3): add the "My appointments" link here once the #}
-            {# appointments:mine route exists. #}
+            <a class="nav-link" href="{% url 'appointments:mine' %}">My appointments</a>
           {% endif %}
           {# Doctors get "My schedule" here in step 7c. #}
 

@@ -1,0 +1,26 @@
+{# Starts from base.html: navbar, Bootstrap and messages come from there. #}
+{% extends "base.html" %}
+{% block title %}Reschedule{% endblock %}
+{% block content %}
+  <a href="{% url 'appointments:mine' %}">&larr; My appointments</a>
+  <h1 class="h3 mt-2">Reschedule with {{ appt.doctor }}</h1>
+  <p class="text-muted">Current time: {{ appt.start_time|date:"D j M Y, g:i A" }}</p>
+
+  {# "days" holds the same doctor's free slots for the next 7 days. #}
+  {% for entry in days %}
+    <div class="card mb-3"><div class="card-body">
+      <h3 class="h6">{{ entry.day|date:"l, j F" }}</h3>
+      {# No "action": the form posts back to this same page, #}
+      {# where the reschedule view handles it. #}
+      <form method="post" class="d-flex flex-wrap gap-2">
+        {% csrf_token %}
+        {% for slot in entry.slots %}
+          {# Same pattern as booking: ISO value sent, friendly time shown. #}
+          <button name="start_time" value="{{ slot.isoformat }}" class="btn btn-outline-primary btn-sm">{{ slot|time:"g:i A" }}</button>
+        {% endfor %}
+      </form>
+    </div></div>
+  {% empty %}
+    <p class="text-muted">No other times available in the next 7 days.</p>
+  {% endfor %}
+{% endblock %}
