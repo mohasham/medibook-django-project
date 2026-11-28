@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     # Our apps
     'accounts',      
     'doctors',                # custom User model with roles
+    'appointments',
 ]
 
 # Middleware = code that runs on every request/response, in this order.
@@ -133,3 +134,13 @@ MAILERS = {
 # built-in one. Format is "app_label.ModelName".
 # This must be set BEFORE the first migrate.
 AUTH_USER_MODEL = "accounts.User"
+
+# Where Django sends users after login/logout and when a page needs a login.
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "accounts:login"
+# Uploaded files (doctor photos). Not in git; each machine has its own copy.
+# MEDIA_URL: the web address prefix, e.g. /media/doctors/dr-ahmad.webp
+# MEDIA_ROOT: the folder on disk where Django saves uploads.
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
