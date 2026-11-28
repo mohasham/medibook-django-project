@@ -139,3 +139,8 @@ AUTH_USER_MODEL = "accounts.User"
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "accounts:login"
+# Uploaded files (doctor photos). Not in git; each machine has its own copy.
+# MEDIA_URL: the web address prefix, e.g. /media/doctors/dr-ahmad.webp
+# MEDIA_ROOT: the folder on disk where Django saves uploads.
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"

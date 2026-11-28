@@ -1,0 +1,39 @@
+{# Starts from base.html: navbar, Bootstrap and messages come from there. #}
+{% extends "base.html" %}
+{% block title %}{{ doctor }}{% endblock %}
+{% block content %}
+  <a href="{% url 'doctors:list' %}">&larr; All doctors</a>
+
+  {# Header: photo (or initials) beside the doctor's name. #}
+  {# The avatar comes from the shared partial doctors/_avatar.html. #}
+  <div class="d-flex align-items-center gap-3 mt-2">
+    {% include "doctors/_avatar.html" with doctor=doctor size=72 %}
+    <h1 class="h3 m-0">{{ doctor }}</h1>
+  </div>
+
+  <p class="text-muted mt-2">{% for s in doctor.specialties.all %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+  <p>{{ doctor.bio }}</p>
+
+  <h2 class="h5 mt-4">Available times (next 7 days)</h2>
+  {# "days" is built in doctors/views.py: only days that still have free slots. #}
+  {% for entry in days %}
+    <div class="card mb-3"><div class="card-body">
+      <h3 class="h6">{{ entry.day|date:"l, j F" }}</h3>
+      {# One form per day. Clicking a time button sends it to the "book" view. #}
+      <form method="post" action="{% url 'appointments:book' doctor.pk %}" class="d-flex flex-wrap gap-2">
+        {# Required in every POST form (CSRF protection). #}
+        {% csrf_token %}
+        {% for slot in entry.slots %}
+          {# The button's value is ISO text such as 2026-11-30T09:00:00+02:00. #}
+          {# The view turns it back into a datetime, time zone included. #}
+          <button name="start_time" value="{{ slot.isoformat }}" class="btn btn-outline-primary btn-sm">
+            {# Display only: shows 9:00 AM, does not affect the saved value. #}
+            {{ slot|time:"g:i A" }}
+          </button>
+        {% endfor %}
+      </form>
+    </div></div>
+  {% empty %}
+    <p class="text-muted">No available times in the next 7 days.</p>
+  {% endfor %}
+{% endblock %}
